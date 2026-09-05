@@ -1,9 +1,11 @@
+import { FLOWER_EMOJI } from '../data/flowers'
+
 export default function FlowerDetailModal({ flower, onClose }) {
   if (!flower) return null
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <img src={flower.image ?? flower.icon} alt={flower.nameKo} />
+        <div className="modal-emoji" aria-hidden="true">{FLOWER_EMOJI}</div>
         <h2>{flower.nameKo}</h2>
         <div className="scientific">{flower.scientificName}</div>
         <div className="modal-row">

@@ -1,16 +1,7 @@
 // Ported from the Dallae Android app's KoreanFlowerCollection (MainActivity.kt).
-const iconModules = import.meta.glob('../assets/flowers/flower_icon_*.webp', { eager: true, import: 'default' })
-const imageModules = import.meta.glob('../assets/flowers/flower_[0-9]*.webp', { eager: true, import: 'default' })
-
-function icon(file) {
-  const match = Object.entries(iconModules).find(([path]) => path.endsWith('/' + file))
-  return match ? match[1] : null
-}
-
-function image(file) {
-  const match = Object.entries(imageModules).find(([path]) => path.endsWith('/' + file))
-  return match ? match[1] : null
-}
+// The real per-species artwork stays mobile-only; the web version shows a
+// single generic emoji for every bloomed flower instead.
+export const FLOWER_EMOJI = '🌸'
 
 const RAW = [
   [1, '제비꽃', 'Manchurian Violet', 'Viola mandshurica', '흔함', 'COMMON', '나를 생각해 주세요 · 순진한 사랑', 'Think of me · Innocent love', '4~5월', 'APR–MAY', '양지바른 들과 길가', 'SUNNY FIELDS AND PATHS', '봄이면 가까운 길가에서도 만날 수 있는 여러해살이풀입니다. 보랏빛 꽃과 땅 가까이 모여나는 잎이 특징입니다.', 'A familiar spring perennial of sunny paths and fields, recognized by its violet flowers and low basal leaves.', 'flower_icon_violet.webp', 'flower_01_violet.webp'],
@@ -66,10 +57,8 @@ const RAW = [
 ]
 
 export const FLOWERS = RAW.map(
-  ([id, nameKo, nameEn, scientificName, rarityKo, rarityEn, meaningKo, meaningEn, bloomKo, bloomEn, habitatKo, habitatEn, descriptionKo, descriptionEn, iconFile, imageFile]) => ({
+  ([id, nameKo, nameEn, scientificName, rarityKo, rarityEn, meaningKo, meaningEn, bloomKo, bloomEn, habitatKo, habitatEn, descriptionKo, descriptionEn]) => ({
     id, nameKo, nameEn, scientificName, rarityKo, rarityEn, meaningKo, meaningEn, bloomKo, bloomEn, habitatKo, habitatEn, descriptionKo, descriptionEn,
-    icon: icon(iconFile),
-    image: image(imageFile),
   })
 )
 

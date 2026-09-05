@@ -6,7 +6,7 @@ import {
   growthStageIndex,
   nextBloomDurationSeconds,
 } from '../data/model'
-import { GROWTH_STAGE_IMAGES, formatClock, formatHm } from '../data/growth'
+import { GROWTH_STAGE_EMOJI, formatClock, formatHm } from '../data/growth'
 import GoalTimerModal from './GoalTimerModal'
 
 export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onAddGoal, onReveal }) {
@@ -41,11 +41,9 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
           return (
             <div className="goal-card" key={skill.id}>
               <h3>{skill.name}</h3>
-              <img
-                className={`goal-stage-img${runningSince ? ' timer-active' : ''}`}
-                src={GROWTH_STAGE_IMAGES[stage]}
-                alt=""
-              />
+              <span className={`goal-stage-emoji${runningSince ? ' timer-active' : ''}`}>
+                {GROWTH_STAGE_EMOJI[stage]}
+              </span>
               <div className="goal-progress-track">
                 <div className="goal-progress-fill" style={{ width: `${pct}%` }} />
               </div>

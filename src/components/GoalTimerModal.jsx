@@ -1,5 +1,5 @@
 import { cycleGrowthSeconds, growthStageIndex, nextBloomDurationSeconds } from '../data/model'
-import { GROWTH_STAGE_IMAGES, formatClock, formatHm } from '../data/growth'
+import { GROWTH_STAGE_EMOJI, formatClock, formatHm } from '../data/growth'
 import GrowthLog from './GrowthLog'
 
 export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, runningTimers, onStartTimer, onStopTimer, onReveal, onClose }) {
@@ -17,7 +17,9 @@ export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, run
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <img className={runningSince ? 'timer-active' : ''} src={GROWTH_STAGE_IMAGES[stage]} alt="" />
+        <div className={`modal-emoji${runningSince ? ' timer-active' : ''}`} aria-hidden="true">
+          {GROWTH_STAGE_EMOJI[stage]}
+        </div>
         <h2>{skill.name}</h2>
         {runningSince && <div className="goal-live-clock" style={{ marginBottom: 10 }}>⏱ {formatClock(liveSeconds)}</div>}
         <div className="goal-progress-track" style={{ margin: '0 0 14px' }}>

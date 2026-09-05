@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { flowerById } from '../data/flowers'
-import gardenBg from '../assets/garden-bg.png'
+import { FLOWER_EMOJI, flowerById } from '../data/flowers'
 import FlowerDetailModal from './FlowerDetailModal'
 
 export default function FriendGardenModal({ username, backup, loading, error, onClose }) {
@@ -21,8 +20,7 @@ export default function FriendGardenModal({ username, backup, loading, error, on
             {backup.gardenPlants.length === 0 ? (
               <p className="empty-hint" style={{ textAlign: 'center' }}>아직 피어난 꽃이 없어요.</p>
             ) : (
-              <div className="garden-stage friend-garden-stage" style={{ backgroundImage: `url(${gardenBg})` }}>
-                <div className="garden-scrim" />
+              <div className="garden-stage friend-garden-stage">
                 {backup.gardenPlants.map((plant) => {
                   const skill = backup.skills.find((s) => s.id === plant.skillId)
                   const flower = flowerById(plant.flowerId)
@@ -33,7 +31,7 @@ export default function FriendGardenModal({ username, backup, loading, error, on
                       style={{ left: `${plant.x * 100}%`, top: `${plant.y * 100}%`, cursor: 'pointer' }}
                       onClick={() => setViewFlower(flower)}
                     >
-                      <img src={flower.icon} alt={flower.nameKo} draggable={false} />
+                      <span className="flower-emoji">{FLOWER_EMOJI}</span>
                       <span>{skill?.name ?? flower.nameKo}</span>
                     </div>
                   )

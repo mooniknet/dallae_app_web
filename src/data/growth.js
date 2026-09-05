@@ -1,15 +1,10 @@
-import seed from '../assets/growth/growth_stage_1_seed.png'
-import germinating from '../assets/growth/growth_stage_2_germinating.png'
-import sprout from '../assets/growth/growth_stage_3_sprout.png'
-import leafy from '../assets/growth/growth_stage_4_leafy.png'
-import bloomReady from '../assets/growth/growth_stage_5_bloom_ready.png'
-
-export const GROWTH_STAGE_IMAGES = {
-  1: seed,
-  2: germinating,
-  3: sprout,
-  4: leafy,
-  5: bloomReady,
+// Generic emoji stand-ins -- the real growth-stage artwork stays mobile-only.
+export const GROWTH_STAGE_EMOJI = {
+  1: '🌰',
+  2: '🌱',
+  3: '🌿',
+  4: '🪴',
+  5: '🌸',
 }
 
 export function formatHm(totalSeconds) {

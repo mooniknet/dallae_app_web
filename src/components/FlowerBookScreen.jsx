@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FLOWERS, FLOWER_BLOOM_ORDER, flowerById } from '../data/flowers'
+import { FLOWERS, FLOWER_BLOOM_ORDER, FLOWER_EMOJI, flowerById } from '../data/flowers'
 import FlowerDetailModal from './FlowerDetailModal'
 
 export default function FlowerBookScreen({ backup }) {
@@ -22,7 +22,7 @@ export default function FlowerBookScreen({ backup }) {
               onClick={() => unlocked && setViewFlower(flower)}
             >
               <div className="flower-tile-box">
-                {unlocked ? <img src={flower.icon} alt={flower.nameKo} /> : <span className="flower-lock">🔒</span>}
+                {unlocked ? <span className="flower-emoji">{FLOWER_EMOJI}</span> : <span className="flower-lock">🔒</span>}
               </div>
               <span className="flower-tile-name">{unlocked ? flower.nameKo : '미발견 꽃'}</span>
               <span className="flower-tile-index">{index + 1}/{FLOWER_BLOOM_ORDER.length}</span>
