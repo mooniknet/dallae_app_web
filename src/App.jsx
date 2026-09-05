@@ -97,8 +97,21 @@ export default function App() {
     })
   }
 
-  function handleMovePlant(skillId, x, y) {
-    mutate((b) => movePlant(b, skillId, x, y))
+  // Dragging fires many times per second -- update local state only (no
+  // network) on each move, then persist once when the drag ends.
+  function handleMovePlantLocal(skillId, x, y) {
+    setBackup((b) => (b ? movePlant(b, skillId, x, y) : b))
+  }
+
+  async function handleMovePlantCommit() {
+    if (!backup || !session) return
+    setSyncStatus('saving')
+    try {
+      await uploadBackup(session.user.id, backup)
+      setSyncStatus('synced')
+    } catch {
+      setSyncStatus('error')
+    }
   }
 
   const syncLabel = useMemo(
@@ -152,7 +165,8 @@ export default function App() {
             onStartTimer={handleStartTimer}
             onStopTimer={handleStopTimer}
             onReveal={handleReveal}
-            onMovePlant={handleMovePlant}
+            onMovePlant={handleMovePlantLocal}
+            onMovePlantCommit={handleMovePlantCommit}
           />
         )}
         {tab === 'book' && <FlowerBookScreen backup={backup} />}

@@ -7,10 +7,13 @@ import {
   nextBloomDurationSeconds,
 } from '../data/model'
 import { GROWTH_STAGE_IMAGES, formatClock, formatHm } from '../data/growth'
+import GoalTimerModal from './GoalTimerModal'
 
 export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onAddGoal, onReveal }) {
   const [newName, setNewName] = useState('')
+  const [viewGoalId, setViewGoalId] = useState(null)
   const goals = goalSkills(backup)
+  const viewGoal = viewGoalId != null ? backup.skills.find((s) => s.id === viewGoalId) : null
 
   function handleAdd(e) {
     e.preventDefault()
@@ -65,6 +68,9 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
                   {runningSince ? '⏸ 타이머 정지' : '▶ 타이머 시작'}
                 </button>
               )}
+              <button className="goal-log-link" onClick={() => setViewGoalId(skill.id)}>
+                성장 기록 보기 →
+              </button>
             </div>
           )
         })}
@@ -82,6 +88,20 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
           </form>
         )}
       </div>
+      <GoalTimerModal
+        skill={viewGoal}
+        gardenPlants={backup.gardenPlants}
+        timeLogs={viewGoal ? backup.timeLogs.filter((l) => l.skillId === viewGoal.id) : []}
+        now={now}
+        runningTimers={runningTimers}
+        onStartTimer={onStartTimer}
+        onStopTimer={onStopTimer}
+        onReveal={(skillId) => {
+          onReveal(skillId)
+          setViewGoalId(null)
+        }}
+        onClose={() => setViewGoalId(null)}
+      />
     </div>
   )
 }

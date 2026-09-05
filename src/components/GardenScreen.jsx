@@ -6,7 +6,7 @@ import gardenBg from '../assets/garden-bg.png'
 import FlowerDetailModal from './FlowerDetailModal'
 import GoalTimerModal from './GoalTimerModal'
 
-export default function GardenScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onReveal, onMovePlant }) {
+export default function GardenScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onReveal, onMovePlant, onMovePlantCommit }) {
   const stageRef = useRef(null)
   const [dragId, setDragId] = useState(null)
   const [viewFlower, setViewFlower] = useState(null)
@@ -34,7 +34,9 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
   function handlePlantPointerUp(e, skillId) {
     e.currentTarget.releasePointerCapture(e.pointerId)
     setDragId(null)
-    if (!draggedRef.current) {
+    if (draggedRef.current) {
+      onMovePlantCommit()
+    } else {
       const plant = backup.gardenPlants.find((p) => p.skillId === skillId)
       if (plant) setViewFlower(flowerById(plant.flowerId))
     }
@@ -101,6 +103,7 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
       <GoalTimerModal
         skill={viewGoal}
         gardenPlants={backup.gardenPlants}
+        timeLogs={viewGoal ? backup.timeLogs.filter((l) => l.skillId === viewGoal.id) : []}
         now={now}
         runningTimers={runningTimers}
         onStartTimer={onStartTimer}

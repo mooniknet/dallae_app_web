@@ -30,3 +30,22 @@ export function formatClock(totalSeconds) {
   const ss = String(s).padStart(2, '0')
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`
 }
+
+// Ported from formatActivityLogDate/-Year/formatLogDuration in the app.
+export function formatLogDate(endedAtMillis) {
+  const d = new Date(endedAtMillis)
+  const time = new Intl.DateTimeFormat('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }).format(d)
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${time}`
+}
+
+export function formatLogYear(endedAtMillis) {
+  return `${new Date(endedAtMillis).getFullYear()}년`
+}
+
+export function formatLogDuration(totalSeconds) {
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  if (hours > 0) return `${hours}시간 ${minutes}분`
+  if (minutes > 0) return `${minutes}분`
+  return '1분 미만'
+}

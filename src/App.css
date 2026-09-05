@@ -276,6 +276,16 @@
   cursor: pointer;
 }
 
+.goal-log-link {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 2px 0;
+}
+
 .add-goal-card {
   border: 1px dashed var(--border);
   border-radius: 18px;
@@ -495,6 +505,53 @@
   font-size: 13.5px;
   line-height: 1.6;
   color: var(--text-dim);
+}
+
+.growth-log {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.growth-log-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.growth-log-list {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.growth-log-year {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 6px 0 2px;
+}
+
+.growth-log-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+}
+
+.growth-log-row span {
+  color: var(--text-dim);
+}
+
+.growth-log-row strong {
+  color: var(--accent-strong);
+  font-weight: 600;
 }
 
 .modal-close {

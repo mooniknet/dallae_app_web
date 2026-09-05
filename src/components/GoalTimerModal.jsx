@@ -1,7 +1,8 @@
 import { cycleGrowthSeconds, growthStageIndex, nextBloomDurationSeconds } from '../data/model'
 import { GROWTH_STAGE_IMAGES, formatClock, formatHm } from '../data/growth'
+import GrowthLog from './GrowthLog'
 
-export default function GoalTimerModal({ skill, gardenPlants, now, runningTimers, onStartTimer, onStopTimer, onReveal, onClose }) {
+export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, runningTimers, onStartTimer, onStopTimer, onReveal, onClose }) {
   if (!skill) return null
   const blooms = gardenPlants.filter((p) => p.skillId === skill.id)
   const runningSince = runningTimers[skill.id]
@@ -45,6 +46,7 @@ export default function GoalTimerModal({ skill, gardenPlants, now, runningTimers
             {runningSince ? '⏸ 타이머 정지' : '▶ 타이머 시작'}
           </button>
         )}
+        <GrowthLog logs={timeLogs} />
         <button className="modal-close" onClick={onClose}>닫기</button>
       </div>
     </div>
