@@ -69,7 +69,12 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
               style={{ left: `${x * 100}%`, top: `${y * 100}%`, cursor: 'pointer' }}
               onClick={() => setViewGoalId(skill.id)}
             >
-              <img src={GROWTH_STAGE_IMAGES[stage]} alt={skill.name} draggable={false} />
+              <img
+                className={runningSince ? 'timer-active' : ''}
+                src={GROWTH_STAGE_IMAGES[stage]}
+                alt={skill.name}
+                draggable={false}
+              />
               <span>{runningSince ? `⏱ ${skill.name}` : skill.name}</span>
             </div>
           )

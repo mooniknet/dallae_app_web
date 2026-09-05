@@ -16,7 +16,7 @@ export default function GoalTimerModal({ skill, gardenPlants, now, runningTimers
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <img src={GROWTH_STAGE_IMAGES[stage]} alt="" />
+        <img className={runningSince ? 'timer-active' : ''} src={GROWTH_STAGE_IMAGES[stage]} alt="" />
         <h2>{skill.name}</h2>
         {runningSince && <div className="goal-live-clock" style={{ marginBottom: 10 }}>⏱ {formatClock(liveSeconds)}</div>}
         <div className="goal-progress-track" style={{ margin: '0 0 14px' }}>

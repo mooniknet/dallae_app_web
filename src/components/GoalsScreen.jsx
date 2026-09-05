@@ -38,7 +38,11 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
           return (
             <div className="goal-card" key={skill.id}>
               <h3>{skill.name}</h3>
-              <img className="goal-stage-img" src={GROWTH_STAGE_IMAGES[stage]} alt="" />
+              <img
+                className={`goal-stage-img${runningSince ? ' timer-active' : ''}`}
+                src={GROWTH_STAGE_IMAGES[stage]}
+                alt=""
+              />
               <div className="goal-progress-track">
                 <div className="goal-progress-fill" style={{ width: `${pct}%` }} />
               </div>

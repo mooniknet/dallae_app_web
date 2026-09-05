@@ -211,6 +211,17 @@
   align-self: center;
 }
 
+@keyframes timer-wiggle {
+  0% { transform: translate(-4px, 0) rotate(-4deg) scale(1); }
+  50% { transform: translate(4px, -4px) rotate(4deg) scale(1.06); }
+  100% { transform: translate(-4px, 0) rotate(-4deg) scale(1); }
+}
+
+.timer-active {
+  animation: timer-wiggle 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(143, 214, 106, 0.55));
+}
+
 .goal-progress-track {
   height: 6px;
   border-radius: 999px;
