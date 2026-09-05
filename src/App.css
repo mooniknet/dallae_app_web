@@ -1,0 +1,459 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- header / nav --- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+  flex-wrap: wrap;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent-strong);
+  letter-spacing: 0.02em;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.nav-tabs button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-tabs button.active {
+  background: rgba(143, 214, 106, 0.16);
+  color: var(--accent-strong);
+  border-color: var(--accent);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.sync-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.sync-badge.saving { color: #f4d994; border-color: rgba(244, 217, 148, 0.4); }
+.sync-badge.error { color: #ff9a8f; border-color: rgba(255, 154, 143, 0.4); }
+.sync-badge.synced { color: var(--accent); }
+
+.signout-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.app-main {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* --- auth --- */
+.auth-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+}
+
+.auth-card h1 {
+  font-size: 26px;
+  margin: 0 0 4px;
+  color: var(--accent-strong);
+}
+
+.auth-card .subtitle {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.auth-field {
+  display: block;
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.auth-field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.auth-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.auth-error {
+  color: #ff9a8f;
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.auth-submit {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: #07110b;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.auth-toggle {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* --- goals --- */
+.section-title {
+  font-size: 15px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 16px;
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.goal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-card h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.goal-stage-img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.goal-progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.goal-meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+}
+
+.goal-timer-btn {
+  padding: 9px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(143, 214, 106, 0.1);
+  color: var(--accent-strong);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.goal-timer-btn.running {
+  background: rgba(255, 154, 143, 0.15);
+  border-color: rgba(255, 154, 143, 0.4);
+  color: #ff9a8f;
+}
+
+.goal-reveal-btn {
+  padding: 9px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #07110b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-goal-card {
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-dim);
+  min-height: 160px;
+}
+
+.add-goal-card input {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.add-goal-card button {
+  width: 100%;
+  padding: 9px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #07110b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.empty-hint {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* --- garden --- */
+.garden-stage {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 420px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background-size: cover;
+  background-position: center;
+}
+
+.garden-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 17, 11, 0.55), rgba(7, 17, 11, 0.15) 40%, rgba(7, 17, 11, 0.7));
+}
+
+.garden-plant {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  user-select: none;
+  width: 76px;
+}
+
+.garden-plant img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+}
+
+.garden-plant span {
+  font-size: 11px;
+  color: var(--accent-strong);
+  background: rgba(6, 15, 12, 0.75);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* --- flower book --- */
+.flower-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+}
+
+.flower-tile {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.flower-tile img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.flower-tile.locked {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.flower-tile.locked img {
+  filter: grayscale(1);
+}
+
+.flower-tile span {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* --- modal --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 20;
+}
+
+.modal-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 26px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 84vh;
+  overflow-y: auto;
+}
+
+.modal-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 16px;
+}
+
+.modal-card h2 {
+  margin: 0 0 2px;
+  text-align: center;
+  color: var(--accent-strong);
+}
+
+.modal-card .scientific {
+  text-align: center;
+  font-style: italic;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.modal-row strong {
+  color: var(--text);
+}
+
+.modal-desc {
+  margin-top: 12px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.modal-close {
+  display: block;
+  margin: 18px auto 0;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 8px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+}

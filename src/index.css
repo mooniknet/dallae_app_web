@@ -1,0 +1,30 @@
+:root {
+  color-scheme: dark;
+  --bg: #07110b;
+  --bg-soft: #0e1a12;
+  --card: #132117;
+  --border: rgba(145, 190, 124, 0.24);
+  --text: #f0f4ec;
+  --text-dim: #b9c9b2;
+  --accent: #8fd66a;
+  --accent-strong: #d9f2cf;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button {
+  font-family: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
