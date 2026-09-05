@@ -6,7 +6,7 @@ import {
   growthStageIndex,
   nextBloomDurationSeconds,
 } from '../data/model'
-import { GROWTH_STAGE_IMAGES, formatHm } from '../data/growth'
+import { GROWTH_STAGE_IMAGES, formatClock, formatHm } from '../data/growth'
 
 export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onAddGoal, onReveal }) {
   const [newName, setNewName] = useState('')
@@ -42,6 +42,7 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
               <div className="goal-progress-track">
                 <div className="goal-progress-fill" style={{ width: `${pct}%` }} />
               </div>
+              {runningSince && <div className="goal-live-clock">⏱ {formatClock(liveSeconds)}</div>}
               <div className="goal-meta">
                 <span>{formatHm(totalSeconds)} 투자됨</span>
                 <span>목표 {formatHm(target)}</span>

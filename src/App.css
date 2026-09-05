@@ -230,6 +230,15 @@
   justify-content: space-between;
 }
 
+.goal-live-clock {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff9a8f;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
 .goal-timer-btn {
   padding: 9px;
   border-radius: 10px;

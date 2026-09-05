@@ -1,5 +1,5 @@
 import { cycleGrowthSeconds, growthStageIndex, nextBloomDurationSeconds } from '../data/model'
-import { GROWTH_STAGE_IMAGES, formatHm } from '../data/growth'
+import { GROWTH_STAGE_IMAGES, formatClock, formatHm } from '../data/growth'
 
 export default function GoalTimerModal({ skill, gardenPlants, now, runningTimers, onStartTimer, onStopTimer, onReveal, onClose }) {
   if (!skill) return null
@@ -18,6 +18,7 @@ export default function GoalTimerModal({ skill, gardenPlants, now, runningTimers
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         <img src={GROWTH_STAGE_IMAGES[stage]} alt="" />
         <h2>{skill.name}</h2>
+        {runningSince && <div className="goal-live-clock" style={{ marginBottom: 10 }}>⏱ {formatClock(liveSeconds)}</div>}
         <div className="goal-progress-track" style={{ margin: '0 0 14px' }}>
           <div className="goal-progress-fill" style={{ width: `${pct}%` }} />
         </div>
