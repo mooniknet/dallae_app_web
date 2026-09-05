@@ -342,7 +342,13 @@
   align-items: center;
   cursor: grab;
   user-select: none;
+  touch-action: none;
   width: 76px;
+}
+
+.garden-plant.dragging {
+  cursor: grabbing;
+  z-index: 5;
 }
 
 .garden-plant img {
