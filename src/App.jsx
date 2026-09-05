@@ -144,7 +144,17 @@ export default function App() {
             onReveal={handleReveal}
           />
         )}
-        {tab === 'garden' && <GardenScreen backup={backup} onMovePlant={handleMovePlant} />}
+        {tab === 'garden' && (
+          <GardenScreen
+            backup={backup}
+            now={now}
+            runningTimers={runningTimers}
+            onStartTimer={handleStartTimer}
+            onStopTimer={handleStopTimer}
+            onReveal={handleReveal}
+            onMovePlant={handleMovePlant}
+          />
+        )}
         {tab === 'book' && <FlowerBookScreen backup={backup} />}
       </main>
     </div>
