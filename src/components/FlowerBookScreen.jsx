@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FLOWERS } from '../data/flowers'
+import { FLOWERS, FLOWER_BLOOM_ORDER, flowerById } from '../data/flowers'
 import FlowerDetailModal from './FlowerDetailModal'
 
 export default function FlowerBookScreen({ backup }) {
@@ -12,7 +12,8 @@ export default function FlowerBookScreen({ backup }) {
         꽃 도감 ({unlockedIds.size}/{FLOWERS.length})
       </h2>
       <div className="flower-grid">
-        {FLOWERS.map((flower) => {
+        {FLOWER_BLOOM_ORDER.map((flowerId, index) => {
+          const flower = flowerById(flowerId)
           const unlocked = unlockedIds.has(flower.id)
           return (
             <div
@@ -20,8 +21,11 @@ export default function FlowerBookScreen({ backup }) {
               className={`flower-tile${unlocked ? '' : ' locked'}`}
               onClick={() => unlocked && setViewFlower(flower)}
             >
-              <img src={flower.icon} alt={unlocked ? flower.nameKo : '???'} />
-              <span>{unlocked ? flower.nameKo : '???'}</span>
+              <div className="flower-tile-box">
+                {unlocked ? <img src={flower.icon} alt={flower.nameKo} /> : <span className="flower-lock">🔒</span>}
+              </div>
+              <span className="flower-tile-name">{unlocked ? flower.nameKo : '미발견 꽃'}</span>
+              <span className="flower-tile-index">{index + 1}/{FLOWER_BLOOM_ORDER.length}</span>
             </div>
           )
         })}
