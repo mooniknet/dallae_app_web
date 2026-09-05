@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { getSession, onAuthChange, signOut } from './lib/auth'
 import { downloadBackup, uploadBackup } from './lib/backup'
-import { addGoal, addInvestedSeconds, createDefaultBackup, moveSeed, movePlant, revealFlower } from './data/model'
+import { addGoal, addInvestedSeconds, createDefaultBackup, revealFlower } from './data/model'
 import { nextFlowerId } from './data/flowers'
 import { ensureProfile } from './lib/social'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
-import GardenScreen from './components/GardenScreen'
 import FlowerBookScreen from './components/FlowerBookScreen'
 import FriendsScreen from './components/FriendsScreen'
 
@@ -116,27 +115,6 @@ export default function App() {
     })
   }
 
-  // Dragging fires many times per second -- update local state only (no
-  // network) on each move, then persist once when the drag ends.
-  function handleMoveSeedLocal(skillId, x, y) {
-    setBackup((b) => (b ? moveSeed(b, skillId, x, y) : b))
-  }
-
-  function handleMovePlantLocal(skillId, x, y) {
-    setBackup((b) => (b ? movePlant(b, skillId, x, y) : b))
-  }
-
-  async function handleMoveCommit() {
-    if (!backup || !session) return
-    setSyncStatus('saving')
-    try {
-      await uploadBackup(session.user.id, backup)
-      setSyncStatus('synced')
-    } catch {
-      setSyncStatus('error')
-    }
-  }
-
   const syncLabel = useMemo(
     () => ({ idle: '', saving: '저장 중...', synced: '동기화됨', error: '동기화 실패' }[syncStatus]),
     [syncStatus]
@@ -153,9 +131,6 @@ export default function App() {
         <nav className="nav-tabs">
           <button className={tab === 'goals' ? 'active' : ''} onClick={() => setTab('goals')}>
             목표
-          </button>
-          <button className={tab === 'garden' ? 'active' : ''} onClick={() => setTab('garden')}>
-            정원
           </button>
           <button className={tab === 'book' ? 'active' : ''} onClick={() => setTab('book')}>
             꽃 도감
@@ -181,19 +156,6 @@ export default function App() {
             onStopTimer={handleStopTimer}
             onAddGoal={handleAddGoal}
             onReveal={handleReveal}
-          />
-        )}
-        {tab === 'garden' && (
-          <GardenScreen
-            backup={backup}
-            now={now}
-            runningTimers={runningTimers}
-            onStartTimer={handleStartTimer}
-            onStopTimer={handleStopTimer}
-            onReveal={handleReveal}
-            onMoveSeed={handleMoveSeedLocal}
-            onMovePlant={handleMovePlantLocal}
-            onMoveCommit={handleMoveCommit}
           />
         )}
         {tab === 'book' && <FlowerBookScreen backup={backup} />}

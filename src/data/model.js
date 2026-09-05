@@ -161,18 +161,3 @@ export function isVisibleInJournal(log) {
   return log.entryType !== 'TIMER' || log.durationSeconds >= 5 * 60
 }
 
-export function moveSeed(backup, skillId, x, y) {
-  const skills = backup.skills.map((s) =>
-    s.id === skillId
-      ? { ...s, x: Math.min(Math.max(x, 0.1), 0.9), y: Math.min(Math.max(y, 0.12), 0.88), positionCustomized: true }
-      : s
-  )
-  return { ...backup, skills }
-}
-
-export function movePlant(backup, skillId, x, y) {
-  const gardenPlants = backup.gardenPlants.map((p) =>
-    p.skillId === skillId ? { ...p, x: Math.min(Math.max(x, 0.1), 0.9), y: Math.min(Math.max(y, 0.12), 0.88) } : p
-  )
-  return { ...backup, gardenPlants }
-}
