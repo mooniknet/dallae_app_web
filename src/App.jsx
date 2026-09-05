@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { getSession, onAuthChange, signOut } from './lib/auth'
 import { downloadBackup, uploadBackup } from './lib/backup'
-import { addGoal, addInvestedSeconds, createDefaultBackup, movePlant, revealFlower } from './data/model'
+import { addGoal, addInvestedSeconds, createDefaultBackup, moveSeed, movePlant, revealFlower } from './data/model'
 import { nextFlowerId } from './data/flowers'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
@@ -99,11 +99,15 @@ export default function App() {
 
   // Dragging fires many times per second -- update local state only (no
   // network) on each move, then persist once when the drag ends.
+  function handleMoveSeedLocal(skillId, x, y) {
+    setBackup((b) => (b ? moveSeed(b, skillId, x, y) : b))
+  }
+
   function handleMovePlantLocal(skillId, x, y) {
     setBackup((b) => (b ? movePlant(b, skillId, x, y) : b))
   }
 
-  async function handleMovePlantCommit() {
+  async function handleMoveCommit() {
     if (!backup || !session) return
     setSyncStatus('saving')
     try {
@@ -165,8 +169,9 @@ export default function App() {
             onStartTimer={handleStartTimer}
             onStopTimer={handleStopTimer}
             onReveal={handleReveal}
+            onMoveSeed={handleMoveSeedLocal}
             onMovePlant={handleMovePlantLocal}
-            onMovePlantCommit={handleMovePlantCommit}
+            onMoveCommit={handleMoveCommit}
           />
         )}
         {tab === 'book' && <FlowerBookScreen backup={backup} />}

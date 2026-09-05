@@ -6,7 +6,17 @@ import gardenBg from '../assets/garden-bg.png'
 import FlowerDetailModal from './FlowerDetailModal'
 import GoalTimerModal from './GoalTimerModal'
 
-export default function GardenScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onReveal, onMovePlant, onMovePlantCommit }) {
+export default function GardenScreen({
+  backup,
+  now,
+  runningTimers,
+  onStartTimer,
+  onStopTimer,
+  onReveal,
+  onMoveSeed,
+  onMovePlant,
+  onMoveCommit,
+}) {
   const stageRef = useRef(null)
   const [dragId, setDragId] = useState(null)
   const [viewFlower, setViewFlower] = useState(null)
@@ -16,29 +26,28 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
   const growingGoals = goalSkills(backup).filter((s) => !s.completed)
   const viewGoal = viewGoalId != null ? backup.skills.find((s) => s.id === viewGoalId) : null
 
-  function handlePlantPointerDown(e, skillId) {
+  function handlePointerDown(e, id) {
     e.currentTarget.setPointerCapture(e.pointerId)
     draggedRef.current = false
-    setDragId(skillId)
+    setDragId(id)
   }
 
-  function handlePlantPointerMove(e, skillId) {
-    if (dragId !== skillId || !stageRef.current) return
+  function handlePointerMove(e, id, onMove) {
+    if (dragId !== id || !stageRef.current) return
     draggedRef.current = true
     const rect = stageRef.current.getBoundingClientRect()
     const x = (e.clientX - rect.left) / rect.width
     const y = (e.clientY - rect.top) / rect.height
-    onMovePlant(skillId, x, y)
+    onMove(id, x, y)
   }
 
-  function handlePlantPointerUp(e, skillId) {
+  function handlePointerUp(e, id, onTap) {
     e.currentTarget.releasePointerCapture(e.pointerId)
     setDragId(null)
     if (draggedRef.current) {
-      onMovePlantCommit()
+      onMoveCommit()
     } else {
-      const plant = backup.gardenPlants.find((p) => p.skillId === skillId)
-      if (plant) setViewFlower(flowerById(plant.flowerId))
+      onTap()
     }
   }
 
@@ -48,15 +57,13 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
       {backup.gardenPlants.length === 0 && growingGoals.length === 0 && (
         <p className="empty-hint">'목표' 탭에서 목표를 심고 시간을 투자해 첫 꽃을 피워보세요.</p>
       )}
-      <div
-        className="garden-stage"
-        style={{ backgroundImage: `url(${gardenBg})` }}
-        ref={stageRef}
-      >
+      <div className="garden-stage" style={{ backgroundImage: `url(${gardenBg})` }} ref={stageRef}>
         <div className="garden-scrim" />
 
         {growingGoals.map((skill, index) => {
-          const [x, y] = seedPlotPosition(index, growingGoals.length)
+          const [autoX, autoY] = seedPlotPosition(index, growingGoals.length)
+          const x = skill.positionCustomized ? skill.x : autoX
+          const y = skill.positionCustomized ? skill.y : autoY
           const blooms = backup.gardenPlants.filter((p) => p.skillId === skill.id)
           const target = nextBloomDurationSeconds(blooms)
           const runningSince = runningTimers[skill.id]
@@ -66,9 +73,11 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
           return (
             <div
               key={skill.id}
-              className="garden-plant"
-              style={{ left: `${x * 100}%`, top: `${y * 100}%`, cursor: 'pointer' }}
-              onClick={() => setViewGoalId(skill.id)}
+              className={`garden-plant${dragId === skill.id ? ' dragging' : ''}`}
+              style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
+              onPointerDown={(e) => handlePointerDown(e, skill.id)}
+              onPointerMove={(e) => handlePointerMove(e, skill.id, onMoveSeed)}
+              onPointerUp={(e) => handlePointerUp(e, skill.id, () => setViewGoalId(skill.id))}
             >
               <img
                 className={runningSince ? 'timer-active' : ''}
@@ -89,9 +98,9 @@ export default function GardenScreen({ backup, now, runningTimers, onStartTimer,
               key={plant.skillId}
               className={`garden-plant${dragId === plant.skillId ? ' dragging' : ''}`}
               style={{ left: `${plant.x * 100}%`, top: `${plant.y * 100}%` }}
-              onPointerDown={(e) => handlePlantPointerDown(e, plant.skillId)}
-              onPointerMove={(e) => handlePlantPointerMove(e, plant.skillId)}
-              onPointerUp={(e) => handlePlantPointerUp(e, plant.skillId)}
+              onPointerDown={(e) => handlePointerDown(e, plant.skillId)}
+              onPointerMove={(e) => handlePointerMove(e, plant.skillId, onMovePlant)}
+              onPointerUp={(e) => handlePointerUp(e, plant.skillId, () => setViewFlower(flowerById(plant.flowerId)))}
             >
               <img src={flower.icon} alt={flower.nameKo} draggable={false} />
               <span>{skill?.name ?? flower.nameKo}</span>
