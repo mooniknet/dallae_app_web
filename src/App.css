@@ -325,6 +325,155 @@
   margin-top: 4px;
 }
 
+/* --- friends / feed --- */
+.friend-search-form {
+  display: flex;
+  gap: 8px;
+  max-width: 360px;
+}
+
+.friend-search-form input {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.friend-search-form button {
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #07110b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.friend-row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.feed-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.feed-item-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.feed-item-head strong {
+  color: var(--accent-strong);
+}
+
+.feed-item-body {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.feed-skill {
+  color: var(--accent);
+}
+
+.feed-item-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.feed-like-btn,
+.feed-comment-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.feed-like-btn.liked {
+  color: #ff9a8f;
+  border-color: rgba(255, 154, 143, 0.4);
+}
+
+.feed-comments {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feed-comment-row {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.feed-comment-row strong {
+  color: var(--text);
+}
+
+.feed-comment-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.feed-comment-form input {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.feed-comment-form button {
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #07110b;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
 /* --- garden --- */
 .garden-stage {
   position: relative;
@@ -552,6 +701,15 @@
 .growth-log-row strong {
   color: var(--accent-strong);
   font-weight: 600;
+}
+
+.friend-garden-card {
+  max-width: 520px;
+}
+
+.friend-garden-stage {
+  height: 320px;
+  min-height: 0;
 }
 
 .modal-close {

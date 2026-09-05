@@ -4,10 +4,16 @@ import { getSession, onAuthChange, signOut } from './lib/auth'
 import { downloadBackup, uploadBackup } from './lib/backup'
 import { addGoal, addInvestedSeconds, createDefaultBackup, moveSeed, movePlant, revealFlower } from './data/model'
 import { nextFlowerId } from './data/flowers'
+import { ensureProfile } from './lib/social'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
 import GardenScreen from './components/GardenScreen'
 import FlowerBookScreen from './components/FlowerBookScreen'
+import FriendsScreen from './components/FriendsScreen'
+
+function usernameFromSession(session) {
+  return session?.user?.user_metadata?.username || session?.user?.email?.split('@')[0] || ''
+}
 
 export default function App() {
   const [session, setSession] = useState(undefined) // undefined = loading, null = signed out
@@ -41,6 +47,7 @@ export default function App() {
           await uploadBackup(session.user.id, fresh)
         }
         setSyncStatus('synced')
+        ensureProfile(session.user.id, usernameFromSession(session)).catch(() => {})
       } catch {
         if (!cancelled) setSyncStatus('error')
       }
@@ -90,10 +97,22 @@ export default function App() {
   }
 
   function handleReveal(skillId) {
+    // If the timer is still running when the flower is revealed, commit its
+    // elapsed time first so that final stretch isn't silently dropped.
+    const startedAt = runningTimers[skillId]
+    if (startedAt) {
+      setRunningTimers((prev) => {
+        const next = { ...prev }
+        delete next[skillId]
+        return next
+      })
+    }
+    const elapsed = startedAt ? Math.round((Date.now() - startedAt) / 1000) : 0
     mutate((b) => {
-      const flowerId = nextFlowerId(b.gardenPlants)
-      if (!flowerId) return b
-      return revealFlower(b, skillId, flowerId)
+      const withTime = elapsed > 0 ? addInvestedSeconds(b, skillId, elapsed) : b
+      const flowerId = nextFlowerId(withTime.gardenPlants)
+      if (!flowerId) return withTime
+      return revealFlower(withTime, skillId, flowerId)
     })
   }
 
@@ -141,6 +160,9 @@ export default function App() {
           <button className={tab === 'book' ? 'active' : ''} onClick={() => setTab('book')}>
             꽃 도감
           </button>
+          <button className={tab === 'friends' ? 'active' : ''} onClick={() => setTab('friends')}>
+            친구
+          </button>
         </nav>
         <div className="header-right">
           {syncLabel && <span className={`sync-badge ${syncStatus}`}>{syncLabel}</span>}
@@ -175,6 +197,9 @@ export default function App() {
           />
         )}
         {tab === 'book' && <FlowerBookScreen backup={backup} />}
+        {tab === 'friends' && (
+          <FriendsScreen userId={session.user.id} username={usernameFromSession(session)} backup={backup} />
+        )}
       </main>
     </div>
   )

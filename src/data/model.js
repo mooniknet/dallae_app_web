@@ -155,6 +155,12 @@ export function revealFlower(backup, skillId, flowerId) {
   return { ...backup, skills, gardenPlants: [...backup.gardenPlants, plant] }
 }
 
+// Mirrors TimeLog.isVisibleInJournal(): short auto-timer blips are hidden
+// from the shared feed, but manual/content entries always show.
+export function isVisibleInJournal(log) {
+  return log.entryType !== 'TIMER' || log.durationSeconds >= 5 * 60
+}
+
 export function moveSeed(backup, skillId, x, y) {
   const skills = backup.skills.map((s) =>
     s.id === skillId
