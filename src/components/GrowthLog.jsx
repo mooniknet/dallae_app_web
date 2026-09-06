@@ -23,6 +23,7 @@ export default function GrowthLog({ logs }) {
                 <span>{formatLogDate(log.endedAtMillis)}</span>
                 <strong>{log.durationSeconds > 0 ? formatLogDuration(log.durationSeconds) : '—'}</strong>
               </div>
+              {log.note && <div className="growth-log-note">{log.note}</div>}
             </div>
           )
         })}

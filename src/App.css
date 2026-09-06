@@ -160,6 +160,18 @@
   font-size: 14px;
 }
 
+.timer-note-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
 .auth-error {
   color: #ff9a8f;
   font-size: 13px;
@@ -684,6 +696,17 @@
 .growth-log-row strong {
   color: var(--accent-strong);
   font-weight: 600;
+}
+
+.growth-log-note {
+  font-size: 12px;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin: -2px 0 2px;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .friend-garden-card {

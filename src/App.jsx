@@ -8,6 +8,7 @@ import { ensureProfile } from './lib/social'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
 import FriendsScreen from './components/FriendsScreen'
+import TimerStopNoteModal from './components/TimerStopNoteModal'
 import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
 import { formatClock } from './data/growth'
 
@@ -23,6 +24,7 @@ export default function App() {
   const [runningTimers, setRunningTimers] = useState({})
   const [activeTimer, setActiveTimer] = useState(null)
   const [now, setNow] = useState(Date.now())
+  const [stopPromptSkillId, setStopPromptSkillId] = useState(null)
   const backupReady = backup !== null
 
   useEffect(() => {
@@ -129,11 +131,11 @@ export default function App() {
     }
   }
 
-  async function handleStopTimer(skillId) {
+  async function handleStopTimer(skillId, note = '') {
     if (!activeTimer || activeTimer.skillId !== skillId) return null
     try {
       setSyncStatus('saving')
-      const record = await stopSharedTimer(activeTimer.eventId)
+      const record = await stopSharedTimer(activeTimer.eventId, note)
       setActiveTimer(null)
       setRunningTimers({})
       setBackup((current) => current ? mergeGrowthRecords(current, [record]) : current)
@@ -144,6 +146,16 @@ export default function App() {
       window.alert('타이머를 정지하지 못했어요. 연결을 확인해주세요.')
       return null
     }
+  }
+
+  function requestStopTimer(skillId) {
+    setStopPromptSkillId(skillId)
+  }
+
+  async function confirmStopTimer(note) {
+    const skillId = stopPromptSkillId
+    setStopPromptSkillId(null)
+    if (skillId != null) await handleStopTimer(skillId, note)
   }
 
   function handleAddGoal(name) {
@@ -189,6 +201,10 @@ export default function App() {
     : null
   const activeTimerSeconds = activeTimer ? (now - activeTimer.startedAtMillis) / 1000 : 0
 
+  const stopPromptSkillName = stopPromptSkillId != null
+    ? backup?.skills.find((s) => s.id === stopPromptSkillId)?.name ?? '타이머'
+    : null
+
   if (session === undefined) return null
   if (!session) return <AuthScreen />
   if (!backup) return null
@@ -224,7 +240,7 @@ export default function App() {
             now={now}
             runningTimers={runningTimers}
             onStartTimer={handleStartTimer}
-            onStopTimer={handleStopTimer}
+            onStopTimer={requestStopTimer}
             onAddGoal={handleAddGoal}
             onReveal={handleReveal}
           />
@@ -233,6 +249,11 @@ export default function App() {
           <FriendsScreen userId={session.user.id} username={usernameFromSession(session)} backup={backup} />
         )}
       </main>
+      <TimerStopNoteModal
+        skillName={stopPromptSkillName}
+        onSkip={() => confirmStopTimer('')}
+        onSubmit={(note) => confirmStopTimer(note)}
+      />
     </div>
   )
 }
