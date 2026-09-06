@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { getSession, onAuthChange, signOut } from './lib/auth'
 import { downloadBackup, uploadBackup } from './lib/backup'
-import { addGoal, addInvestedSeconds, createDefaultBackup, revealFlower } from './data/model'
+import { addGoal, createDefaultBackup, mergeGrowthRecords, revealFlower } from './data/model'
 import { nextFlowerId } from './data/flowers'
 import { ensureProfile } from './lib/social'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
 import FlowerBookScreen from './components/FlowerBookScreen'
 import FriendsScreen from './components/FriendsScreen'
+import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
 
 function usernameFromSession(session) {
   return session?.user?.user_metadata?.username || session?.user?.email?.split('@')[0] || ''
@@ -20,7 +21,9 @@ export default function App() {
   const [tab, setTab] = useState('goals')
   const [syncStatus, setSyncStatus] = useState('idle')
   const [runningTimers, setRunningTimers] = useState({})
+  const [activeTimer, setActiveTimer] = useState(null)
   const [now, setNow] = useState(Date.now())
+  const backupReady = backup !== null
 
   useEffect(() => {
     getSession().then(setSession)
@@ -56,6 +59,33 @@ export default function App() {
     }
   }, [session])
 
+  const refreshSharedGrowth = useCallback(async () => {
+    if (!session) return
+    const shared = await loadSharedGrowthState(session.user.id)
+    setActiveTimer(shared.activeTimer)
+    setRunningTimers(shared.activeTimer ? { [shared.activeTimer.skillId]: shared.activeTimer.startedAtMillis } : {})
+    setBackup((current) => current ? mergeGrowthRecords(current, shared.records) : current)
+  }, [session])
+
+  useEffect(() => {
+    if (!session || !backupReady) return
+    let cancelled = false
+    const refresh = () => refreshSharedGrowth().catch(() => {
+      if (!cancelled) setSyncStatus('error')
+    })
+    refresh()
+    const unsubscribe = subscribeToSharedGrowth(session.user.id, refresh)
+    const recover = setInterval(refresh, 30000)
+    const onVisible = () => { if (document.visibilityState === 'visible') refresh() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      cancelled = true
+      unsubscribe()
+      clearInterval(recover)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [session, backupReady, refreshSharedGrowth])
+
   useEffect(() => {
     if (Object.keys(runningTimers).length === 0) return
     const id = setInterval(() => setNow(Date.now()), 1000)
@@ -75,44 +105,61 @@ export default function App() {
     }
   }
 
-  function handleStartTimer(skillId) {
-    setRunningTimers((prev) => ({ ...prev, [skillId]: Date.now() }))
+  async function handleStartTimer(skillId) {
+    try {
+      setSyncStatus('saving')
+      const timer = await startSharedTimer(skillId)
+      setActiveTimer(timer)
+      setRunningTimers({ [timer.skillId]: timer.startedAtMillis })
+      setSyncStatus('synced')
+    } catch {
+      await refreshSharedGrowth().catch(() => {})
+      setSyncStatus('error')
+      window.alert('다른 기기에서 타이머가 이미 실행 중일 수 있어요.')
+    }
   }
 
-  function handleStopTimer(skillId) {
-    const startedAt = runningTimers[skillId]
-    if (!startedAt) return
-    setRunningTimers((prev) => {
-      const next = { ...prev }
-      delete next[skillId]
-      return next
-    })
-    const elapsed = Math.round((Date.now() - startedAt) / 1000)
-    mutate((b) => addInvestedSeconds(b, skillId, elapsed))
+  async function handleStopTimer(skillId) {
+    if (!activeTimer || activeTimer.skillId !== skillId) return null
+    try {
+      setSyncStatus('saving')
+      const record = await stopSharedTimer(activeTimer.eventId)
+      setActiveTimer(null)
+      setRunningTimers({})
+      setBackup((current) => current ? mergeGrowthRecords(current, [record]) : current)
+      setSyncStatus('synced')
+      return record
+    } catch {
+      setSyncStatus('error')
+      window.alert('타이머를 정지하지 못했어요. 연결을 확인해주세요.')
+      return null
+    }
   }
 
   function handleAddGoal(name) {
     mutate((b) => addGoal(b, name))
   }
 
-  function handleReveal(skillId) {
+  async function handleReveal(skillId) {
     // If the timer is still running when the flower is revealed, commit its
     // elapsed time first so that final stretch isn't silently dropped.
-    const startedAt = runningTimers[skillId]
-    if (startedAt) {
-      setRunningTimers((prev) => {
-        const next = { ...prev }
-        delete next[skillId]
-        return next
-      })
+    let base = backup
+    if (runningTimers[skillId]) {
+      const record = await handleStopTimer(skillId)
+      if (!record) return
+      base = mergeGrowthRecords(base, [record])
     }
-    const elapsed = startedAt ? Math.round((Date.now() - startedAt) / 1000) : 0
-    mutate((b) => {
-      const withTime = elapsed > 0 ? addInvestedSeconds(b, skillId, elapsed) : b
-      const flowerId = nextFlowerId(withTime.gardenPlants)
-      if (!flowerId) return withTime
-      return revealFlower(withTime, skillId, flowerId)
-    })
+    const flowerId = nextFlowerId(base.gardenPlants)
+    if (!flowerId) return
+    const next = revealFlower(base, skillId, flowerId)
+    setBackup(next)
+    setSyncStatus('saving')
+    try {
+      await uploadBackup(session.user.id, next)
+      setSyncStatus('synced')
+    } catch {
+      setSyncStatus('error')
+    }
   }
 
   const syncLabel = useMemo(

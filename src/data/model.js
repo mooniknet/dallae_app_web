@@ -138,6 +138,36 @@ export function addInvestedSeconds(backup, skillId, seconds, endedAtMillis = now
   return { ...backup, skills, timeLogs }
 }
 
+// Reconcile append-only server records without uploading the full backup again.
+// This keeps a web timer from overwriting a newer Android snapshot (and vice versa).
+export function mergeGrowthRecords(backup, records) {
+  let skills = backup.skills
+  let timeLogs = backup.timeLogs
+  let changed = false
+
+  for (const record of records) {
+    const existing = timeLogs.find((log) => Number(log.id) === Number(record.id))
+    if (record.deleted) {
+      if (!existing) continue
+      skills = skills.map((skill) => skill.id === existing.skillId
+        ? { ...skill, investedSeconds: Math.max(0, skill.investedSeconds - existing.durationSeconds) }
+        : skill)
+      timeLogs = timeLogs.filter((log) => Number(log.id) !== Number(record.id))
+      changed = true
+    } else if (!existing) {
+      skills = skills.map((skill) => skill.id === record.skillId
+        ? { ...skill, investedSeconds: skill.investedSeconds + record.durationSeconds }
+        : skill)
+      if (skills.some((skill) => skill.id === record.skillId)) {
+        const { deleted: _deleted, startedAtMillis: _startedAtMillis, eventId: _eventId, ...log } = record
+        timeLogs = [...timeLogs, log]
+        changed = true
+      }
+    }
+  }
+  return changed ? { ...backup, skills, timeLogs } : backup
+}
+
 export function revealFlower(backup, skillId, flowerId) {
   const skillIndex = backup.skills.findIndex((s) => s.id === skillId)
   if (skillIndex === -1) throw new Error('skill not found')
