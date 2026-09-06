@@ -24,6 +24,7 @@ export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, run
           className={`modal-stage-icon stage-${stage}${runningSince ? ' timer-active' : ''}`}
         />
         <h2>{skill.name}</h2>
+        {skill.detail && <p className="subtitle" style={{ marginBottom: 14 }}>{skill.detail}</p>}
         {runningSince && <div className="goal-live-clock" style={{ marginBottom: 10 }}>⏱ {formatClock(liveSeconds)}</div>}
         <div className="goal-progress-track" style={{ margin: '0 0 14px' }}>
           <div className="goal-progress-fill" style={{ width: `${pct}%` }} />

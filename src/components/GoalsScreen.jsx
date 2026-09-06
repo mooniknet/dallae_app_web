@@ -8,20 +8,25 @@ import {
 } from '../data/model'
 import { formatClock, formatHm } from '../data/growth'
 import GoalTimerModal from './GoalTimerModal'
+import GoalEditModal from './GoalEditModal'
 import dallaeCharacter from '../assets/dallae-character.png'
 
-export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onAddGoal, onReveal }) {
+export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onAddGoal, onEditGoal, onReveal }) {
   const [newName, setNewName] = useState('')
+  const [newDetail, setNewDetail] = useState('')
   const [viewGoalId, setViewGoalId] = useState(null)
+  const [editGoalId, setEditGoalId] = useState(null)
   const goals = goalSkills(backup)
   const viewGoal = viewGoalId != null ? backup.skills.find((s) => s.id === viewGoalId) : null
+  const editGoal = editGoalId != null ? backup.skills.find((s) => s.id === editGoalId) : null
 
   function handleAdd(e) {
     e.preventDefault()
     const name = newName.trim()
     if (!name) return
-    onAddGoal(name)
+    onAddGoal(name, newDetail.trim())
     setNewName('')
+    setNewDetail('')
   }
 
   return (
@@ -44,6 +49,13 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
               <h3>
                 {skill.name}
                 {blooms.length > 0 && <span className="goal-bloom-count"> 🌸×{blooms.length}</span>}
+                <button
+                  className="goal-edit-btn"
+                  onClick={() => setEditGoalId(skill.id)}
+                  aria-label="목표 수정"
+                >
+                  ✏️
+                </button>
               </h3>
               <img
                 src={dallaeCharacter}
@@ -85,6 +97,13 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
               placeholder="목표 이름"
               maxLength={40}
             />
+            <textarea
+              value={newDetail}
+              onChange={(e) => setNewDetail(e.target.value)}
+              placeholder="목표 내용 (선택)"
+              maxLength={300}
+              rows={3}
+            />
             <button type="submit">씨앗 심기</button>
           </form>
         )}
@@ -102,6 +121,15 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
           setViewGoalId(null)
         }}
         onClose={() => setViewGoalId(null)}
+      />
+      <GoalEditModal
+        key={editGoal?.id ?? 'none'}
+        skill={editGoal}
+        onSave={(name, detail) => {
+          onEditGoal(editGoal.id, { name, detail })
+          setEditGoalId(null)
+        }}
+        onClose={() => setEditGoalId(null)}
       />
     </div>
   )

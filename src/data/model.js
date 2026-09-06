@@ -61,6 +61,7 @@ export function createDefaultBackup() {
       growDays: 1,
       webAutoStopEnabled: true,
       webAutoStopMinutes: 45,
+      webStopMusicWithTimer: true,
     },
     skills: [
       {
@@ -205,5 +206,20 @@ export function webAutoStopMinutes(backup) {
 
 export function setWebAutoStopEnabled(backup, enabled) {
   return { ...backup, settings: { ...backup.settings, webAutoStopEnabled: enabled } }
+}
+
+export function isStopMusicWithTimerEnabled(backup) {
+  return backup.settings?.webStopMusicWithTimer !== false
+}
+
+export function setStopMusicWithTimerEnabled(backup, enabled) {
+  return { ...backup, settings: { ...backup.settings, webStopMusicWithTimer: enabled } }
+}
+
+export function updateGoal(backup, skillId, { name, detail }) {
+  const skills = backup.skills.map((s) =>
+    s.id === skillId ? { ...s, name: name ?? s.name, detail: detail ?? s.detail } : s
+  )
+  return { ...backup, skills }
 }
 

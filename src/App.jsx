@@ -5,11 +5,14 @@ import { downloadBackup, uploadBackup } from './lib/backup'
 import {
   addGoal,
   createDefaultBackup,
+  isStopMusicWithTimerEnabled,
   isVisibleInJournal,
   isWebAutoStopEnabled,
   mergeGrowthRecords,
   revealFlower,
+  setStopMusicWithTimerEnabled,
   setWebAutoStopEnabled,
+  updateGoal,
   webAutoStopMinutes,
 } from './data/model'
 import { nextFlowerId } from './data/flowers'
@@ -190,11 +193,17 @@ export default function App() {
     setMusicBlocked(false)
   }
 
-  function handleMusicHeaderToggle() {
+  function muteAllMusic() {
     const onIds = allTrackIds().filter((id) => (musicVolumes[id] ?? 0) > 0)
-    if (onIds.length > 0) {
-      musicMuteSnapshotRef.current = Object.fromEntries(onIds.map((id) => [id, musicVolumes[id]]))
-      onIds.forEach((id) => handleMusicVolumeChange(id, 0))
+    if (onIds.length === 0) return
+    musicMuteSnapshotRef.current = Object.fromEntries(onIds.map((id) => [id, musicVolumes[id]]))
+    onIds.forEach((id) => handleMusicVolumeChange(id, 0))
+  }
+
+  function handleMusicHeaderToggle() {
+    const anyOn = allTrackIds().some((id) => (musicVolumes[id] ?? 0) > 0)
+    if (anyOn) {
+      muteAllMusic()
     } else {
       const snapshot = musicMuteSnapshotRef.current
       const restoreIds = snapshot ? Object.keys(snapshot) : allTrackIds()
@@ -246,6 +255,7 @@ export default function App() {
       setRunningTimers({})
       setBackup((current) => current ? mergeGrowthRecords(current, [record]) : current)
       setSyncStatus('synced')
+      if (backup && isStopMusicWithTimerEnabled(backup)) muteAllMusic()
       return record
     } catch {
       setSyncStatus('error')
@@ -273,8 +283,12 @@ export default function App() {
     if (skillId != null) await handleStopTimer(skillId, note)
   }
 
-  function handleAddGoal(name) {
-    mutate((b) => addGoal(b, name))
+  function handleAddGoal(name, detail) {
+    mutate((b) => addGoal(b, name, detail))
+  }
+
+  function handleEditGoal(skillId, { name, detail }) {
+    mutate((b) => updateGoal(b, skillId, { name, detail }))
   }
 
   async function handleReveal(skillId) {
@@ -305,6 +319,10 @@ export default function App() {
       setNotifyPermission(perm)
     }
     mutate((b) => setWebAutoStopEnabled(b, enabled))
+  }
+
+  function handleToggleStopMusicWithTimer(enabled) {
+    mutate((b) => setStopMusicWithTimerEnabled(b, enabled))
   }
 
   async function handleSignOut() {
@@ -380,6 +398,7 @@ export default function App() {
             onStartTimer={handleStartTimer}
             onStopTimer={requestStopTimer}
             onAddGoal={handleAddGoal}
+            onEditGoal={handleEditGoal}
             onReveal={handleReveal}
           />
         )}
@@ -420,6 +439,8 @@ export default function App() {
         autoStopMinutes={webAutoStopMinutes(backup)}
         notifyPermission={notifyPermission}
         onToggleAutoStop={handleToggleAutoStop}
+        stopMusicEnabled={isStopMusicWithTimerEnabled(backup)}
+        onToggleStopMusic={handleToggleStopMusicWithTimer}
         onClose={() => setSettingsOpen(false)}
       />
     </div>

@@ -1,4 +1,13 @@
-export default function SettingsModal({ open, autoStopEnabled, autoStopMinutes, notifyPermission, onToggleAutoStop, onClose }) {
+export default function SettingsModal({
+  open,
+  autoStopEnabled,
+  autoStopMinutes,
+  notifyPermission,
+  onToggleAutoStop,
+  stopMusicEnabled,
+  onToggleStopMusic,
+  onClose,
+}) {
   if (!open) return null
 
   return (
@@ -26,6 +35,22 @@ export default function SettingsModal({ open, autoStopEnabled, autoStopMinutes, 
             브라우저 알림이 차단되어 있어요. 브라우저 주소창의 사이트 설정에서 알림을 허용해주세요.
           </p>
         )}
+        <div className="settings-row" style={{ marginTop: 16 }}>
+          <div className="settings-row-text">
+            <div className="settings-row-title">타이머 정지 시 음악도 정지</div>
+            <div className="settings-row-desc">
+              타이머가 멈추면(자동 정지 포함) 켜져 있던 배경음악도 함께 꺼져요.
+            </div>
+          </div>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={stopMusicEnabled}
+              onChange={(e) => onToggleStopMusic(e.target.checked)}
+            />
+            <span className="switch-track" />
+          </label>
+        </div>
         <button className="modal-close" onClick={onClose}>닫기</button>
       </div>
     </div>

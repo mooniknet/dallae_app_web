@@ -409,6 +409,20 @@
   color: var(--text);
 }
 
+.goal-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.6;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.goal-edit-btn:hover {
+  opacity: 1;
+}
+
 .goal-bloom-count {
   font-size: 12px;
   color: var(--text-dim);
@@ -525,13 +539,16 @@
   min-height: 160px;
 }
 
-.add-goal-card input {
+.add-goal-card input,
+.add-goal-card textarea {
   width: 100%;
   padding: 9px 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
+  font-family: inherit;
+  resize: vertical;
 }
 
 .add-goal-card button {
