@@ -25,7 +25,7 @@ export const MUSIC_THEMES = [
   },
 ]
 
-export const DEFAULT_MUSIC_VOLUME = 0.5
+export const DEFAULT_MUSIC_VOLUME = 0
 
 export function allTrackIds() {
   return MUSIC_THEMES.flatMap((theme) => theme.tracks.map((t) => t.id))
