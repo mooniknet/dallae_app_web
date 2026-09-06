@@ -29,6 +29,9 @@ export default function AuthScreen() {
         <p className="subtitle">
           {mode === 'signin' ? '기존 계정(모바일 앱과 동일)으로 로그인하세요.' : '새 계정을 만드세요.'}
         </p>
+        <div className="web-scope-note">
+          웹 버전은 목표 타이머 기능을 중심으로 제공돼요. 정원 꾸미기 등 다른 기능은 앱에 비해 제한적이에요.
+        </div>
         <form onSubmit={handleSubmit}>
           <label className="auth-field">
             <span>아이디</span>
