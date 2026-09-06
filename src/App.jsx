@@ -5,6 +5,7 @@ import { downloadBackup, uploadBackup } from './lib/backup'
 import {
   addGoal,
   createDefaultBackup,
+  isVisibleInJournal,
   isWebAutoStopEnabled,
   mergeGrowthRecords,
   revealFlower,
@@ -184,6 +185,15 @@ export default function App() {
   }
 
   function requestStopTimer(skillId) {
+    // Sessions under 5 minutes are hidden from the journal/feed anyway
+    // (see isVisibleInJournal), so skip the note prompt for those.
+    const elapsedSeconds = activeTimer && activeTimer.skillId === skillId
+      ? (Date.now() - activeTimer.startedAtMillis) / 1000
+      : 0
+    if (!isVisibleInJournal({ entryType: 'TIMER', durationSeconds: elapsedSeconds })) {
+      handleStopTimer(skillId)
+      return
+    }
     setStopPromptSkillId(skillId)
   }
 
