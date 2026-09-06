@@ -7,7 +7,6 @@ import { nextFlowerId } from './data/flowers'
 import { ensureProfile } from './lib/social'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
-import FlowerBookScreen from './components/FlowerBookScreen'
 import FriendsScreen from './components/FriendsScreen'
 import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
 
@@ -179,9 +178,6 @@ export default function App() {
           <button className={tab === 'goals' ? 'active' : ''} onClick={() => setTab('goals')}>
             목표
           </button>
-          <button className={tab === 'book' ? 'active' : ''} onClick={() => setTab('book')}>
-            꽃 도감
-          </button>
           <button className={tab === 'friends' ? 'active' : ''} onClick={() => setTab('friends')}>
             친구
           </button>
@@ -205,7 +201,6 @@ export default function App() {
             onReveal={handleReveal}
           />
         )}
-        {tab === 'book' && <FlowerBookScreen backup={backup} />}
         {tab === 'friends' && (
           <FriendsScreen userId={session.user.id} username={usernameFromSession(session)} backup={backup} />
         )}

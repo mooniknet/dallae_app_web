@@ -222,11 +222,21 @@
   font-weight: normal;
 }
 
-.goal-stage-emoji {
-  font-size: 64px;
-  line-height: 1;
+.goal-stage-icon {
+  width: 72px;
+  height: 72px;
   align-self: center;
-  text-align: center;
+  object-fit: contain;
+  transition: filter 0.4s ease, transform 0.4s ease;
+}
+
+.goal-stage-icon.stage-1 { filter: grayscale(70%) opacity(0.55); transform: scale(0.72); }
+.goal-stage-icon.stage-2 { filter: grayscale(40%) opacity(0.7); transform: scale(0.82); }
+.goal-stage-icon.stage-3 { filter: grayscale(15%) opacity(0.85); transform: scale(0.92); }
+.goal-stage-icon.stage-4 { filter: opacity(0.95); transform: scale(1); }
+.goal-stage-icon.stage-5 {
+  filter: drop-shadow(0 0 12px rgba(244, 217, 148, 0.65));
+  transform: scale(1.08);
 }
 
 @keyframes timer-wiggle {
@@ -523,10 +533,10 @@
   z-index: 5;
 }
 
-.garden-plant .flower-emoji,
-.garden-plant .stage-emoji {
-  font-size: 40px;
-  line-height: 1;
+.garden-plant-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
   filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
 }
 
@@ -538,68 +548,6 @@
   border-radius: 999px;
   margin-top: 4px;
   text-align: center;
-}
-
-/* --- flower book --- */
-.flower-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: 12px;
-}
-
-.flower-tile {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
-.flower-tile.locked {
-  border-color: rgba(185, 201, 178, 0.18);
-  cursor: default;
-}
-
-.flower-tile-box {
-  width: 100%;
-  aspect-ratio: 1;
-  background: #102019;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flower-tile.locked .flower-tile-box {
-  background: #0a110c;
-}
-
-.flower-tile-box .flower-emoji {
-  font-size: 34px;
-}
-
-.flower-lock {
-  font-size: 26px;
-  opacity: 0.7;
-}
-
-.flower-tile-name {
-  font-size: 11px;
-  color: var(--text-dim);
-  text-align: center;
-}
-
-.flower-tile.locked .flower-tile-name {
-  color: rgba(185, 201, 178, 0.45);
-}
-
-.flower-tile-index {
-  font-size: 10px;
-  color: #f4d994;
 }
 
 /* --- modal --- */
@@ -625,11 +573,22 @@
   overflow-y: auto;
 }
 
-.modal-emoji {
-  font-size: 88px;
-  line-height: 1;
-  text-align: center;
+.modal-stage-icon {
+  display: block;
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
   margin: 0 auto 16px;
+  transition: filter 0.4s ease, transform 0.4s ease;
+}
+
+.modal-stage-icon.stage-1 { filter: grayscale(70%) opacity(0.55); transform: scale(0.72); }
+.modal-stage-icon.stage-2 { filter: grayscale(40%) opacity(0.7); transform: scale(0.82); }
+.modal-stage-icon.stage-3 { filter: grayscale(15%) opacity(0.85); transform: scale(0.92); }
+.modal-stage-icon.stage-4 { filter: opacity(0.95); transform: scale(1); }
+.modal-stage-icon.stage-5 {
+  filter: drop-shadow(0 0 14px rgba(244, 217, 148, 0.65));
+  transform: scale(1.08);
 }
 
 .modal-card h2 {

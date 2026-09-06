@@ -6,8 +6,9 @@ import {
   growthStageIndex,
   nextBloomDurationSeconds,
 } from '../data/model'
-import { GROWTH_STAGE_EMOJI, formatClock, formatHm } from '../data/growth'
+import { formatClock, formatHm } from '../data/growth'
 import GoalTimerModal from './GoalTimerModal'
+import dallaeCharacter from '../assets/dallae-character.png'
 
 export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, onStopTimer, onAddGoal, onReveal }) {
   const [newName, setNewName] = useState('')
@@ -44,9 +45,11 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
                 {skill.name}
                 {blooms.length > 0 && <span className="goal-bloom-count"> 🌸×{blooms.length}</span>}
               </h3>
-              <span className={`goal-stage-emoji${runningSince ? ' timer-active' : ''}`}>
-                {GROWTH_STAGE_EMOJI[stage]}
-              </span>
+              <img
+                src={dallaeCharacter}
+                alt=""
+                className={`goal-stage-icon stage-${stage}${runningSince ? ' timer-active' : ''}`}
+              />
               <div className="goal-progress-track">
                 <div className="goal-progress-fill" style={{ width: `${pct}%` }} />
               </div>

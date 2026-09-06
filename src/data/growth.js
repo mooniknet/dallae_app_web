@@ -1,12 +1,3 @@
-// Generic emoji stand-ins -- the real growth-stage artwork stays mobile-only.
-export const GROWTH_STAGE_EMOJI = {
-  1: '🫘',
-  2: '🌱',
-  3: '🌿',
-  4: '🪴',
-  5: '🌸',
-}
-
 export function formatHm(totalSeconds) {
   const seconds = Math.max(0, Math.floor(totalSeconds))
   const h = Math.floor(seconds / 3600)

@@ -1,9 +1,6 @@
-import { useState } from 'react'
-import { FLOWER_EMOJI, flowerById } from '../data/flowers'
-import FlowerDetailModal from './FlowerDetailModal'
+import dallaeCharacter from '../assets/dallae-character.png'
 
 export default function FriendGardenModal({ username, backup, loading, error, onClose }) {
-  const [viewFlower, setViewFlower] = useState(null)
   if (username == null) return null
 
   return (
@@ -23,16 +20,14 @@ export default function FriendGardenModal({ username, backup, loading, error, on
               <div className="garden-stage friend-garden-stage">
                 {backup.gardenPlants.map((plant) => {
                   const skill = backup.skills.find((s) => s.id === plant.skillId)
-                  const flower = flowerById(plant.flowerId)
                   return (
                     <div
                       key={plant.skillId}
                       className="garden-plant"
-                      style={{ left: `${plant.x * 100}%`, top: `${plant.y * 100}%`, cursor: 'pointer' }}
-                      onClick={() => setViewFlower(flower)}
+                      style={{ left: `${plant.x * 100}%`, top: `${plant.y * 100}%` }}
                     >
-                      <span className="flower-emoji">{FLOWER_EMOJI}</span>
-                      <span>{skill?.name ?? flower.nameKo}</span>
+                      <img src={dallaeCharacter} alt="" className="garden-plant-icon" />
+                      <span>{skill?.name ?? '달래'}</span>
                     </div>
                   )
                 })}
@@ -42,7 +37,6 @@ export default function FriendGardenModal({ username, backup, loading, error, on
         )}
         <button className="modal-close" onClick={onClose}>닫기</button>
       </div>
-      <FlowerDetailModal flower={viewFlower} onClose={() => setViewFlower(null)} />
     </div>
   )
 }

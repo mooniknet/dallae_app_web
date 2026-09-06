@@ -1,6 +1,7 @@
 import { cycleGrowthSeconds, growthStageIndex, nextBloomDurationSeconds } from '../data/model'
-import { GROWTH_STAGE_EMOJI, formatClock, formatHm } from '../data/growth'
+import { formatClock, formatHm } from '../data/growth'
 import GrowthLog from './GrowthLog'
+import dallaeCharacter from '../assets/dallae-character.png'
 
 export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, runningTimers, onStartTimer, onStopTimer, onReveal, onClose }) {
   if (!skill) return null
@@ -17,9 +18,11 @@ export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, run
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <div className={`modal-emoji${runningSince ? ' timer-active' : ''}`} aria-hidden="true">
-          {GROWTH_STAGE_EMOJI[stage]}
-        </div>
+        <img
+          src={dallaeCharacter}
+          alt=""
+          className={`modal-stage-icon stage-${stage}${runningSince ? ' timer-active' : ''}`}
+        />
         <h2>{skill.name}</h2>
         {runningSince && <div className="goal-live-clock" style={{ marginBottom: 10 }}>⏱ {formatClock(liveSeconds)}</div>}
         <div className="goal-progress-track" style={{ margin: '0 0 14px' }}>
