@@ -92,15 +92,26 @@ export default function App() {
     const refresh = () => refreshSharedGrowth().catch(() => {
       if (!cancelled) setSyncStatus('error')
     })
+    let recover = null
+    const setRealtimeConnected = (connected) => {
+      if (cancelled) return
+      if (connected) {
+        if (recover) clearInterval(recover)
+        recover = null
+        refresh()
+      } else if (!recover) {
+        recover = setInterval(refresh, 30000)
+      }
+    }
     refresh()
-    const unsubscribe = subscribeToSharedGrowth(session.user.id, refresh)
-    const recover = setInterval(refresh, 30000)
+    const unsubscribe = subscribeToSharedGrowth(session.user.id, refresh, setRealtimeConnected)
+    setRealtimeConnected(false)
     const onVisible = () => { if (document.visibilityState === 'visible') refresh() }
     document.addEventListener('visibilitychange', onVisible)
     return () => {
       cancelled = true
       unsubscribe()
-      clearInterval(recover)
+      if (recover) clearInterval(recover)
       document.removeEventListener('visibilitychange', onVisible)
     }
   }, [session, backupReady, refreshSharedGrowth])

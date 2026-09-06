@@ -41,8 +41,14 @@ function mapActiveTimer(row) {
 
 export async function loadSharedGrowthState(userId) {
   const [timerResult, recordsResult] = await Promise.all([
-    supabase.from('dallae_active_timers').select('*').eq('user_id', userId).maybeSingle(),
-    supabase.from('dallae_growth_records').select('*').eq('user_id', userId).order('created_at'),
+    supabase.from('dallae_active_timers')
+      .select('event_id,skill_id,started_at,source_client,source_device_id')
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase.from('dallae_growth_records')
+      .select('event_id,log_id,skill_id,started_at,ended_at,duration_seconds,entry_type,note,deleted_at')
+      .eq('user_id', userId)
+      .order('created_at'),
   ])
   if (timerResult.error) throw timerResult.error
   if (recordsResult.error) throw recordsResult.error
@@ -71,7 +77,7 @@ export async function stopSharedTimer(eventId, note = '') {
   return mapRecord(data)
 }
 
-export function subscribeToSharedGrowth(userId, onChange) {
+export function subscribeToSharedGrowth(userId, onChange, onConnectionChange = () => {}) {
   const channel = supabase
     .channel(`dallae:${userId}`)
     .on('postgres_changes', {
@@ -80,6 +86,8 @@ export function subscribeToSharedGrowth(userId, onChange) {
     .on('postgres_changes', {
       event: '*', schema: 'public', table: 'dallae_growth_records', filter: `user_id=eq.${userId}`,
     }, onChange)
-    .subscribe()
+    .subscribe((status) => {
+      onConnectionChange(status === 'SUBSCRIBED')
+    })
   return () => { supabase.removeChannel(channel) }
 }
