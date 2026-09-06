@@ -46,6 +46,7 @@ export default function App() {
   const autoStoppedEventRef = useRef(null)
   const musicAudioRefs = useRef({})
   const musicLastOnVolumeRef = useRef({})
+  const musicMuteSnapshotRef = useRef(null)
   const [musicVolumes, setMusicVolumes] = useState(() =>
     Object.fromEntries(allTrackIds().map((id) => [id, DEFAULT_MUSIC_VOLUME]))
   )
@@ -189,6 +190,22 @@ export default function App() {
     setMusicBlocked(false)
   }
 
+  function handleMusicHeaderToggle() {
+    const onIds = allTrackIds().filter((id) => (musicVolumes[id] ?? 0) > 0)
+    if (onIds.length > 0) {
+      musicMuteSnapshotRef.current = Object.fromEntries(onIds.map((id) => [id, musicVolumes[id]]))
+      onIds.forEach((id) => handleMusicVolumeChange(id, 0))
+    } else {
+      const snapshot = musicMuteSnapshotRef.current
+      const restoreIds = snapshot ? Object.keys(snapshot) : allTrackIds()
+      restoreIds.forEach((id) => {
+        const value = snapshot?.[id] ?? musicLastOnVolumeRef.current[id] ?? DEFAULT_ON_VOLUME
+        handleMusicVolumeChange(id, value)
+      })
+      musicMuteSnapshotRef.current = null
+    }
+  }
+
   async function mutate(fn) {
     if (!backup || !session) return
     const next = fn(backup)
@@ -311,6 +328,8 @@ export default function App() {
     ? backup?.skills.find((s) => s.id === stopPromptSkillId)?.name ?? '타이머'
     : null
 
+  const anyMusicOn = allTrackIds().some((id) => (musicVolumes[id] ?? 0) > 0)
+
   if (session === undefined) return null
   if (!session) return <AuthScreen />
   if (!backup) return null
@@ -337,6 +356,13 @@ export default function App() {
             </span>
           )}
           {syncLabel && <span className={`sync-badge ${syncStatus}`}>{syncLabel}</span>}
+          <button
+            className={`music-header-btn${anyMusicOn ? ' on' : ''}`}
+            onClick={handleMusicHeaderToggle}
+            aria-label={anyMusicOn ? '배경음악 정지' : '배경음악 재생'}
+          >
+            {anyMusicOn ? '🎵' : '🔇'}
+          </button>
           <button className="settings-btn" onClick={() => setSettingsOpen(true)} aria-label="설정">
             ⚙
           </button>

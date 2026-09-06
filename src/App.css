@@ -97,6 +97,22 @@
   line-height: 1;
 }
 
+.music-header-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.music-header-btn.on {
+  border-color: rgba(143, 214, 106, 0.5);
+  background: rgba(143, 214, 106, 0.1);
+}
+
 .settings-row {
   display: flex;
   align-items: center;
