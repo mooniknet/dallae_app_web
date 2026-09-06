@@ -1,16 +1,29 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { getSession, onAuthChange, signOut } from './lib/auth'
 import { downloadBackup, uploadBackup } from './lib/backup'
-import { addGoal, createDefaultBackup, mergeGrowthRecords, revealFlower } from './data/model'
+import {
+  addGoal,
+  createDefaultBackup,
+  isWebAutoStopEnabled,
+  mergeGrowthRecords,
+  revealFlower,
+  setWebAutoStopEnabled,
+  webAutoStopMinutes,
+} from './data/model'
 import { nextFlowerId } from './data/flowers'
 import { ensureProfile } from './lib/social'
 import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
 import FriendsScreen from './components/FriendsScreen'
 import TimerStopNoteModal from './components/TimerStopNoteModal'
+import SettingsModal from './components/SettingsModal'
 import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
 import { formatClock } from './data/growth'
+
+function notificationSupported() {
+  return typeof window !== 'undefined' && 'Notification' in window
+}
 
 function usernameFromSession(session) {
   return session?.user?.user_metadata?.username || session?.user?.email?.split('@')[0] || ''
@@ -25,6 +38,9 @@ export default function App() {
   const [activeTimer, setActiveTimer] = useState(null)
   const [now, setNow] = useState(Date.now())
   const [stopPromptSkillId, setStopPromptSkillId] = useState(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [notifyPermission, setNotifyPermission] = useState(notificationSupported() ? Notification.permission : 'denied')
+  const autoStoppedEventRef = useRef(null)
   const backupReady = backup !== null
 
   useEffect(() => {
@@ -104,6 +120,21 @@ export default function App() {
     document.title = `⏱ ${formatClock(seconds)} · ${skillName ?? '달래'}`
   }, [activeTimer, now, backup])
 
+  useEffect(() => {
+    if (!activeTimer || !backup) return
+    if (!isWebAutoStopEnabled(backup)) return
+    const minutes = webAutoStopMinutes(backup)
+    const elapsedSeconds = (now - activeTimer.startedAtMillis) / 1000
+    if (elapsedSeconds < minutes * 60) return
+    if (autoStoppedEventRef.current === activeTimer.eventId) return
+    autoStoppedEventRef.current = activeTimer.eventId
+    const skillName = backup.skills.find((s) => s.id === activeTimer.skillId)?.name ?? '타이머'
+    if (notificationSupported() && Notification.permission === 'granted') {
+      new Notification('달래', { body: `${skillName} 타이머가 ${minutes}분이 되어 자동으로 정지됐어요.` })
+    }
+    handleStopTimer(activeTimer.skillId)
+  }, [activeTimer, now, backup])
+
   async function mutate(fn) {
     if (!backup || !session) return
     const next = fn(backup)
@@ -119,6 +150,10 @@ export default function App() {
 
   async function handleStartTimer(skillId) {
     try {
+      if (isWebAutoStopEnabled(backup) && notificationSupported() && Notification.permission === 'default') {
+        const perm = await Notification.requestPermission()
+        setNotifyPermission(perm)
+      }
       setSyncStatus('saving')
       const timer = await startSharedTimer(skillId)
       setActiveTimer(timer)
@@ -184,6 +219,14 @@ export default function App() {
     }
   }
 
+  async function handleToggleAutoStop(enabled) {
+    if (enabled && notificationSupported() && Notification.permission === 'default') {
+      const perm = await Notification.requestPermission()
+      setNotifyPermission(perm)
+    }
+    mutate((b) => setWebAutoStopEnabled(b, enabled))
+  }
+
   async function handleSignOut() {
     if (activeTimer) {
       await handleStopTimer(activeTimer.skillId)
@@ -228,6 +271,9 @@ export default function App() {
             </span>
           )}
           {syncLabel && <span className={`sync-badge ${syncStatus}`}>{syncLabel}</span>}
+          <button className="settings-btn" onClick={() => setSettingsOpen(true)} aria-label="설정">
+            ⚙
+          </button>
           <button className="signout-btn" onClick={handleSignOut}>
             로그아웃
           </button>
@@ -253,6 +299,14 @@ export default function App() {
         skillName={stopPromptSkillName}
         onSkip={() => confirmStopTimer('')}
         onSubmit={(note) => confirmStopTimer(note)}
+      />
+      <SettingsModal
+        open={settingsOpen}
+        autoStopEnabled={isWebAutoStopEnabled(backup)}
+        autoStopMinutes={webAutoStopMinutes(backup)}
+        notifyPermission={notifyPermission}
+        onToggleAutoStop={handleToggleAutoStop}
+        onClose={() => setSettingsOpen(false)}
       />
     </div>
   )

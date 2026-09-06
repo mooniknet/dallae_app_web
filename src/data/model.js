@@ -59,6 +59,8 @@ export function createDefaultBackup() {
       selectedGardenBackgroundId: 'forest',
       unlockedGardenBackgroundIds: ['forest'],
       growDays: 1,
+      webAutoStopEnabled: true,
+      webAutoStopMinutes: 45,
     },
     skills: [
       {
@@ -189,5 +191,19 @@ export function revealFlower(backup, skillId, flowerId) {
 // from the shared feed, but manual/content entries always show.
 export function isVisibleInJournal(log) {
   return log.entryType !== 'TIMER' || log.durationSeconds >= 5 * 60
+}
+
+const DEFAULT_WEB_AUTO_STOP_MINUTES = 45
+
+export function isWebAutoStopEnabled(backup) {
+  return backup.settings?.webAutoStopEnabled !== false
+}
+
+export function webAutoStopMinutes(backup) {
+  return backup.settings?.webAutoStopMinutes ?? DEFAULT_WEB_AUTO_STOP_MINUTES
+}
+
+export function setWebAutoStopEnabled(backup, enabled) {
+  return { ...backup, settings: { ...backup.settings, webAutoStopEnabled: enabled } }
 }
 
