@@ -1,12 +1,15 @@
 import dallaeCharacter from '../assets/dallae-character.png'
+import { cycleGrowthSeconds, goalSkills, growthStageIndex, nextBloomDurationSeconds } from '../data/model'
+import { formatHm } from '../data/growth'
 
 export default function FriendGardenModal({ username, backup, loading, error, onClose }) {
   if (username == null) return null
+  const goals = backup ? goalSkills(backup) : []
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card friend-garden-card" onClick={(e) => e.stopPropagation()}>
-        <h2>{username}님의 정원</h2>
+        <h2>{username}님의 목표</h2>
         {loading && <p className="empty-hint" style={{ textAlign: 'center' }}>불러오는 중...</p>}
         {!loading && error && <p className="empty-hint" style={{ textAlign: 'center' }}>{error}</p>}
         {!loading && !error && backup && (
@@ -14,20 +17,32 @@ export default function FriendGardenModal({ username, backup, loading, error, on
             <p className="scientific" style={{ marginBottom: 12 }}>
               {backup.gardenPlants.length}송이 피어남
             </p>
-            {backup.gardenPlants.length === 0 ? (
-              <p className="empty-hint" style={{ textAlign: 'center' }}>아직 피어난 꽃이 없어요.</p>
+            {goals.length === 0 ? (
+              <p className="empty-hint" style={{ textAlign: 'center' }}>아직 심은 목표가 없어요.</p>
             ) : (
-              <div className="garden-stage friend-garden-stage">
-                {backup.gardenPlants.map((plant) => {
-                  const skill = backup.skills.find((s) => s.id === plant.skillId)
+              <div className="friend-goal-list">
+                {goals.map((skill) => {
+                  const blooms = backup.gardenPlants.filter((p) => p.skillId === skill.id)
+                  const target = nextBloomDurationSeconds(blooms)
+                  const growth = cycleGrowthSeconds(skill.investedSeconds, blooms)
+                  const stage = growthStageIndex(growth, target)
+                  const pct = Math.min(100, (growth / target) * 100)
                   return (
-                    <div
-                      key={plant.skillId}
-                      className="garden-plant"
-                      style={{ left: `${plant.x * 100}%`, top: `${plant.y * 100}%` }}
-                    >
-                      <img src={dallaeCharacter} alt="" className="garden-plant-icon" />
-                      <span>{skill?.name ?? '달래'}</span>
+                    <div className="friend-goal-row" key={skill.id}>
+                      <img src={dallaeCharacter} alt="" className={`friend-goal-icon stage-${stage}`} />
+                      <div className="friend-goal-info">
+                        <div className="friend-goal-name">
+                          {skill.name}
+                          {blooms.length > 0 && <span className="goal-bloom-count"> 🌸×{blooms.length}</span>}
+                        </div>
+                        <div className="goal-progress-track">
+                          <div className="goal-progress-fill" style={{ width: `${pct}%` }} />
+                        </div>
+                        <div className="goal-meta">
+                          <span>{formatHm(skill.investedSeconds)} 투자됨</span>
+                          <span>목표 {formatHm(target)}</span>
+                        </div>
+                      </div>
                     </div>
                   )
                 })}
