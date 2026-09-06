@@ -9,6 +9,7 @@ import AuthScreen from './components/AuthScreen'
 import GoalsScreen from './components/GoalsScreen'
 import FriendsScreen from './components/FriendsScreen'
 import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
+import { formatClock } from './data/growth'
 
 function usernameFromSession(session) {
   return session?.user?.user_metadata?.username || session?.user?.email?.split('@')[0] || ''
@@ -91,6 +92,16 @@ export default function App() {
     return () => clearInterval(id)
   }, [runningTimers])
 
+  useEffect(() => {
+    if (!activeTimer) {
+      document.title = '달래 — Dallae'
+      return
+    }
+    const skillName = backup?.skills.find((s) => s.id === activeTimer.skillId)?.name
+    const seconds = (now - activeTimer.startedAtMillis) / 1000
+    document.title = `⏱ ${formatClock(seconds)} · ${skillName ?? '달래'}`
+  }, [activeTimer, now, backup])
+
   async function mutate(fn) {
     if (!backup || !session) return
     const next = fn(backup)
@@ -161,10 +172,22 @@ export default function App() {
     }
   }
 
+  async function handleSignOut() {
+    if (activeTimer) {
+      await handleStopTimer(activeTimer.skillId)
+    }
+    await signOut()
+  }
+
   const syncLabel = useMemo(
     () => ({ idle: '', saving: '저장 중...', synced: '동기화됨', error: '동기화 실패' }[syncStatus]),
     [syncStatus]
   )
+
+  const activeTimerSkillName = activeTimer
+    ? backup?.skills.find((s) => s.id === activeTimer.skillId)?.name
+    : null
+  const activeTimerSeconds = activeTimer ? (now - activeTimer.startedAtMillis) / 1000 : 0
 
   if (session === undefined) return null
   if (!session) return <AuthScreen />
@@ -183,8 +206,13 @@ export default function App() {
           </button>
         </nav>
         <div className="header-right">
+          {activeTimer && (
+            <span className="header-timer-badge">
+              ⏱ {activeTimerSkillName ?? '타이머'} {formatClock(activeTimerSeconds)}
+            </span>
+          )}
           {syncLabel && <span className={`sync-badge ${syncStatus}`}>{syncLabel}</span>}
-          <button className="signout-btn" onClick={signOut}>
+          <button className="signout-btn" onClick={handleSignOut}>
             로그아웃
           </button>
         </div>
