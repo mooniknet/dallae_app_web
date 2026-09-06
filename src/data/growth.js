@@ -1,6 +1,6 @@
 // Generic emoji stand-ins -- the real growth-stage artwork stays mobile-only.
 export const GROWTH_STAGE_EMOJI = {
-  1: '🌰',
+  1: '🫘',
   2: '🌱',
   3: '🌿',
   4: '🪴',
