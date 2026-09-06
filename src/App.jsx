@@ -22,7 +22,7 @@ import SettingsModal from './components/SettingsModal'
 import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
 import { formatClock } from './data/growth'
 import MusicScreen from './components/MusicScreen'
-import { MUSIC_THEMES, DEFAULT_MUSIC_VOLUME, allTrackIds } from './data/music'
+import { MUSIC_THEMES, DEFAULT_MUSIC_VOLUME, DEFAULT_ON_VOLUME, allTrackIds } from './data/music'
 
 function notificationSupported() {
   return typeof window !== 'undefined' && 'Notification' in window
@@ -45,6 +45,7 @@ export default function App() {
   const [notifyPermission, setNotifyPermission] = useState(notificationSupported() ? Notification.permission : 'denied')
   const autoStoppedEventRef = useRef(null)
   const musicAudioRefs = useRef({})
+  const musicLastOnVolumeRef = useRef({})
   const [musicVolumes, setMusicVolumes] = useState(() =>
     Object.fromEntries(allTrackIds().map((id) => [id, DEFAULT_MUSIC_VOLUME]))
   )
@@ -171,9 +172,16 @@ export default function App() {
   }, [session, backupReady])
 
   function handleMusicVolumeChange(trackId, value) {
+    if (value > 0) musicLastOnVolumeRef.current[trackId] = value
     setMusicVolumes((prev) => ({ ...prev, [trackId]: value }))
     const audio = musicAudioRefs.current[trackId]
     if (audio) audio.volume = value
+  }
+
+  function handleMusicToggle(trackId) {
+    const isOn = (musicVolumes[trackId] ?? 0) > 0
+    const nextValue = isOn ? 0 : musicLastOnVolumeRef.current[trackId] ?? DEFAULT_ON_VOLUME
+    handleMusicVolumeChange(trackId, nextValue)
   }
 
   function handleMusicRetry() {
@@ -356,6 +364,7 @@ export default function App() {
           <MusicScreen
             volumes={musicVolumes}
             onVolumeChange={handleMusicVolumeChange}
+            onToggle={handleMusicToggle}
             blocked={musicBlocked}
             onRetry={handleMusicRetry}
           />

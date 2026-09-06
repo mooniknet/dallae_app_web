@@ -1,6 +1,6 @@
 import { MUSIC_THEMES } from '../data/music'
 
-export default function MusicScreen({ volumes, onVolumeChange, blocked, onRetry }) {
+export default function MusicScreen({ volumes, onVolumeChange, onToggle, blocked, onRetry }) {
   return (
     <div>
       <h2 className="section-title">배경음악</h2>
@@ -16,20 +16,30 @@ export default function MusicScreen({ volumes, onVolumeChange, blocked, onRetry 
         <div className="music-theme" key={theme.id}>
           <h3 className="music-theme-title">{theme.name}</h3>
           <div className="music-track-list">
-            {theme.tracks.map((track) => (
-              <div className="music-track-row" key={track.id}>
-                <span className="music-track-name">{track.name}</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={volumes[track.id] ?? 0}
-                  onChange={(e) => onVolumeChange(track.id, Number(e.target.value))}
-                  className="music-volume-slider"
-                />
-              </div>
-            ))}
+            {theme.tracks.map((track) => {
+              const isOn = (volumes[track.id] ?? 0) > 0
+              return (
+                <div className="music-track-row" key={track.id}>
+                  <button
+                    className={`music-track-icon${isOn ? ' on' : ''}`}
+                    onClick={() => onToggle(track.id)}
+                    aria-label={isOn ? `${track.name} 끄기` : `${track.name} 켜기`}
+                  >
+                    {track.icon}
+                  </button>
+                  <span className="music-track-name">{track.name}</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={volumes[track.id] ?? 0}
+                    onChange={(e) => onVolumeChange(track.id, Number(e.target.value))}
+                    className="music-volume-slider"
+                  />
+                </div>
+              )
+            })}
           </div>
         </div>
       ))}
