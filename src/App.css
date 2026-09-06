@@ -261,7 +261,12 @@
 
 .timer-active {
   animation: timer-wiggle 1.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(143, 214, 106, 0.55));
+}
+
+/* Higher specificity than .stage-N so the running glow always wins over stage dimming. */
+.goal-stage-icon.timer-active,
+.modal-stage-icon.timer-active {
+  filter: drop-shadow(0 0 10px rgba(143, 214, 106, 0.55)) !important;
 }
 
 .goal-progress-track {
