@@ -40,7 +40,6 @@ export default function FriendGardenModal({ username, backup, loading, error, on
                         </div>
                         <div className="goal-meta">
                           <span>{formatHm(skill.investedSeconds)} 투자됨</span>
-                          <span>목표 {formatHm(target)}</span>
                         </div>
                       </div>
                     </div>

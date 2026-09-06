@@ -56,7 +56,6 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
               {runningSince && <div className="goal-live-clock">⏱ {formatClock(liveSeconds)}</div>}
               <div className="goal-meta">
                 <span>{formatHm(totalSeconds)} 투자됨</span>
-                <span>목표 {formatHm(target)}</span>
               </div>
               {ready ? (
                 <button className="goal-reveal-btn" onClick={() => onReveal(skill.id)}>

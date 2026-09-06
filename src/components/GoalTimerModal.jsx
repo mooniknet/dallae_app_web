@@ -32,10 +32,6 @@ export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, run
           <span>투자된 시간</span>
           <strong>{formatHm(totalSeconds)}</strong>
         </div>
-        <div className="modal-row">
-          <span>다음 개화 목표</span>
-          <strong>{formatHm(target)}</strong>
-        </div>
         {ready ? (
           <button className="goal-reveal-btn" style={{ width: '100%', marginTop: 16 }} onClick={() => onReveal(skill.id)}>
             🌱 꽃 피우기
