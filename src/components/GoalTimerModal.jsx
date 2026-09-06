@@ -11,7 +11,7 @@ export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, run
   const target = nextBloomDurationSeconds(blooms)
   const growth = cycleGrowthSeconds(totalSeconds, blooms)
   const stage = growthStageIndex(growth, target)
-  const ready = growth >= target && !skill.completed
+  const ready = growth >= target
   const pct = Math.min(100, (growth / target) * 100)
 
   return (
@@ -33,9 +33,7 @@ export default function GoalTimerModal({ skill, gardenPlants, timeLogs, now, run
           <span>다음 개화 목표</span>
           <strong>{formatHm(target)}</strong>
         </div>
-        {skill.completed ? (
-          <p className="empty-hint" style={{ textAlign: 'center', marginTop: 14 }}>이미 꽃을 피운 목표예요 🌸</p>
-        ) : ready ? (
+        {ready ? (
           <button className="goal-reveal-btn" style={{ width: '100%', marginTop: 16 }} onClick={() => onReveal(skill.id)}>
             🌱 꽃 피우기
           </button>

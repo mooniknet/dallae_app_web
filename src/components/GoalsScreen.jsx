@@ -35,12 +35,15 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
           const target = nextBloomDurationSeconds(blooms)
           const growth = cycleGrowthSeconds(totalSeconds, blooms)
           const stage = growthStageIndex(growth, target)
-          const ready = growth >= target && !skill.completed
+          const ready = growth >= target
           const pct = Math.min(100, (growth / target) * 100)
 
           return (
             <div className="goal-card" key={skill.id}>
-              <h3>{skill.name}</h3>
+              <h3>
+                {skill.name}
+                {blooms.length > 0 && <span className="goal-bloom-count"> 🌸×{blooms.length}</span>}
+              </h3>
               <span className={`goal-stage-emoji${runningSince ? ' timer-active' : ''}`}>
                 {GROWTH_STAGE_EMOJI[stage]}
               </span>
@@ -52,9 +55,7 @@ export default function GoalsScreen({ backup, now, runningTimers, onStartTimer, 
                 <span>{formatHm(totalSeconds)} 투자됨</span>
                 <span>목표 {formatHm(target)}</span>
               </div>
-              {skill.completed ? (
-                <div className="empty-hint">이미 꽃을 피운 목표예요 🌸</div>
-              ) : ready ? (
+              {ready ? (
                 <button className="goal-reveal-btn" onClick={() => onReveal(skill.id)}>
                   🌱 꽃 피우기
                 </button>
