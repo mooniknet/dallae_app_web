@@ -21,6 +21,8 @@ import TimerStopNoteModal from './components/TimerStopNoteModal'
 import SettingsModal from './components/SettingsModal'
 import { loadSharedGrowthState, startSharedTimer, stopSharedTimer, subscribeToSharedGrowth } from './lib/realtimeGrowth'
 import { formatClock } from './data/growth'
+import MusicScreen from './components/MusicScreen'
+import { MUSIC_THEMES, DEFAULT_MUSIC_VOLUME, allTrackIds } from './data/music'
 
 function notificationSupported() {
   return typeof window !== 'undefined' && 'Notification' in window
@@ -42,6 +44,11 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [notifyPermission, setNotifyPermission] = useState(notificationSupported() ? Notification.permission : 'denied')
   const autoStoppedEventRef = useRef(null)
+  const musicAudioRefs = useRef({})
+  const [musicVolumes, setMusicVolumes] = useState(() =>
+    Object.fromEntries(allTrackIds().map((id) => [id, DEFAULT_MUSIC_VOLUME]))
+  )
+  const [musicBlocked, setMusicBlocked] = useState(false)
   const backupReady = backup !== null
 
   useEffect(() => {
@@ -146,6 +153,33 @@ export default function App() {
     }
     handleStopTimer(activeTimer.skillId)
   }, [activeTimer, now, backup])
+
+  useEffect(() => {
+    // The <audio> elements only exist once the app shell (past the backup
+    // loading gate) has actually rendered, so wait on backupReady rather
+    // than session -- otherwise musicAudioRefs is still empty here.
+    if (!session || !backupReady) return
+    const entries = Object.entries(musicAudioRefs.current)
+    entries.forEach(([id, audio]) => {
+      if (audio) audio.volume = musicVolumes[id] ?? DEFAULT_MUSIC_VOLUME
+    })
+    Promise.all(entries.map(([, audio]) => (audio ? audio.play().catch(() => 'blocked') : null))).then(
+      (results) => {
+        if (results.includes('blocked')) setMusicBlocked(true)
+      }
+    )
+  }, [session, backupReady])
+
+  function handleMusicVolumeChange(trackId, value) {
+    setMusicVolumes((prev) => ({ ...prev, [trackId]: value }))
+    const audio = musicAudioRefs.current[trackId]
+    if (audio) audio.volume = value
+  }
+
+  function handleMusicRetry() {
+    Object.values(musicAudioRefs.current).forEach((audio) => audio?.play().catch(() => {}))
+    setMusicBlocked(false)
+  }
 
   async function mutate(fn) {
     if (!backup || !session) return
@@ -284,6 +318,9 @@ export default function App() {
           <button className={tab === 'friends' ? 'active' : ''} onClick={() => setTab('friends')}>
             친구
           </button>
+          <button className={tab === 'music' ? 'active' : ''} onClick={() => setTab('music')}>
+            음악
+          </button>
         </nav>
         <div className="header-right">
           {activeTimer && (
@@ -315,7 +352,28 @@ export default function App() {
         {tab === 'friends' && (
           <FriendsScreen userId={session.user.id} username={usernameFromSession(session)} backup={backup} />
         )}
+        {tab === 'music' && (
+          <MusicScreen
+            volumes={musicVolumes}
+            onVolumeChange={handleMusicVolumeChange}
+            blocked={musicBlocked}
+            onRetry={handleMusicRetry}
+          />
+        )}
       </main>
+      <div style={{ display: 'none' }}>
+        {MUSIC_THEMES.flatMap((theme) =>
+          theme.tracks.map((track) => (
+            <audio
+              key={track.id}
+              ref={(el) => { musicAudioRefs.current[track.id] = el }}
+              src={`${import.meta.env.BASE_URL}music/${track.file}`}
+              loop
+              preload="auto"
+            />
+          ))
+        )}
+      </div>
       <TimerStopNoteModal
         skillName={stopPromptSkillName}
         onSkip={() => confirmStopTimer('')}
